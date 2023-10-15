@@ -7,3 +7,4 @@ add_executable(learn_opengl main.cpp)
 
 add_subdirectory(chapter2-4)
 add_subdirectory(chapter2-5)
+add_subdirectory(chapter2-6)

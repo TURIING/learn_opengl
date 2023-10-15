@@ -12,7 +12,7 @@ constexpr int SCR_WIDTH = 800;
 constexpr int SCR_HEIGHT= 600;
 
 int main() {
-#if 1   // 绘制三角形
+#if 0   // 绘制三角形
     std::vector<float> vertices = {
             -0.5f, -0.5f, 0.0f, // left
             0.5f, -0.5f, 0.0f, // right
