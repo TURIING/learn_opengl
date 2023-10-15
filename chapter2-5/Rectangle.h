@@ -22,7 +22,6 @@ public:
         glDeleteVertexArrays(1, &m_VAO);
         glDeleteBuffers(1, &m_VBO);
         glDeleteBuffers(1, &m_EBO);
-        glDeleteProgram(m_shaderProgram);
 
         glfwTerminate();
     }
@@ -73,7 +72,7 @@ protected:
      */
     void paint() override {
         // 使用着色器程序
-        glUseProgram(m_shaderProgram);
+        m_shader->use();
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }

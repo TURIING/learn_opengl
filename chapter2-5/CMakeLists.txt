@@ -2,7 +2,7 @@ include_directories(.)
 
 add_executable(chapter2-5 ${PROJECT_SOURCE_DIR}/src/glad.c main.cpp GLObject.h Triangle.h Rectangle.h)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR})
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 target_link_libraries(chapter2-5 ${PROJECT_SOURCE_DIR}/lib/glfw3.dll)
 

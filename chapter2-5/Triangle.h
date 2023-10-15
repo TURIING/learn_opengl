@@ -21,7 +21,6 @@ public:
         /* 清理并退出 */
         glDeleteVertexArrays(1, &m_VAO);
         glDeleteBuffers(1, &m_VBO);
-        glDeleteProgram(m_shaderProgram);
 
         glfwTerminate();
     }
@@ -59,10 +58,9 @@ protected:
      */
     void paint() override {
         // 使用着色器程序
-        glUseProgram(m_shaderProgram);
+        m_shader->use();
 
         glDrawArrays(GL_TRIANGLES, 0, m_vertices.size() / m_verticesStride);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 };
 

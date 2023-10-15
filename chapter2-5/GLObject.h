@@ -9,6 +9,8 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <assert.h>
+#include <string>
+#include <GLShader.h>
 
 class GLObject {
 public:
@@ -16,7 +18,9 @@ public:
         initGL();
     }
 
-    virtual ~GLObject(){};
+    virtual ~GLObject(){
+        delete m_shader;
+    };
 
     void loop() {
         /* 循环渲染 */
@@ -34,13 +38,11 @@ public:
     }
 
     void init() {
-        initVertexShader();
-        initFragmentShader();
-        initShaderProgram();
-
         initVAO();
         initVBO();
         initEBO();
+
+        initShader();
     }
 
     void setVertices(std::vector<float> &_vertices, int _stride) {
@@ -48,13 +50,15 @@ public:
         m_verticesStride = _stride;
     }
     void setIndices(std::vector<unsigned int> &_indices) { m_indices = std::move(_indices); }
-    void setVertexShaderSource(const char *_shader) { m_vertexShaderSource = _shader; }
-    void setFragmentShaderSource(const char *_shader) { m_fragmentShaderSource = _shader; }
     void setClearColor(float _r, float _g, float _b, float _a) {
         m_clearColor[0] = _r;
         m_clearColor[1] = _g;
         m_clearColor[2] = _b;
         m_clearColor[3] = _a;
+    }
+    void setShader(std::string _vertexPath, std::string _fragmentPath) {
+        m_vertexPath = std::move(_vertexPath);
+        m_fragmentPath = std::move(_fragmentPath);
     }
 private:
     GLFWwindow *m_window = nullptr;
@@ -74,13 +78,12 @@ protected:
     unsigned int m_EBO = 0;
     std::vector<unsigned int> m_indices;                                                          // 顶点索引数组
 
-    const char *m_vertexShaderSource = nullptr;                                                   // 顶点着色器源码
-    unsigned int m_vertexShader = 0;                                                              // 顶点着色器对象
-
-    const char *m_fragmentShaderSource = nullptr;                                                 // 顶点着色器源码
-    unsigned int m_fragmentShader = 0;                                                            // 顶点着色器对象
-
-    unsigned int m_shaderProgram = 0;                                                             // 着色器程序
+    /* 着色器 */
+    // 着色器文件路径
+    std::string m_vertexPath;
+    std::string m_fragmentPath;
+    // 着色器对象
+    GLShader *m_shader;
 
 private:
     void initGL() {
@@ -106,69 +109,13 @@ private:
     }
 
     /*
-     * 初始化顶点着色器
+     * 初始化着色器
      */
-    void initVertexShader() {
-        assert(m_vertexShaderSource != nullptr);
+    void initShader() {
+        assert(!m_vertexPath.empty());
+        assert(!m_fragmentPath.empty());
 
-        m_vertexShader = glCreateShader(GL_VERTEX_SHADER);                                         // 创建顶点着色器对象
-        glShaderSource(m_vertexShader, 1, &m_vertexShaderSource, nullptr);                         // 将源码绑定到着色器上
-        glCompileShader(m_vertexShader);                                                           // 编译顶点着色器
-
-        int success;
-        char info[512];
-        glGetShaderiv(m_vertexShader, GL_COMPILE_STATUS, &success);                                 // 获取编译结果
-        if(!success) {
-            glGetShaderInfoLog(m_vertexShader, 512, nullptr, info);
-            throw info;
-        }
-    }
-
-    /*
-     * 初始化片段着色器
-     */
-    void initFragmentShader() {
-        assert(m_fragmentShaderSource != nullptr);
-
-        m_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);                                       // 创建顶点着色器对象
-        glShaderSource(m_fragmentShader, 1, &m_fragmentShaderSource, nullptr);                       // 将源码绑定到着色器上
-        glCompileShader(m_fragmentShader);                                                           // 编译顶点着色器
-
-        int success;
-        char info[512];
-        glGetShaderiv(m_fragmentShader, GL_COMPILE_STATUS, &success);                                 // 获取编译结果
-        if(!success) {
-            glGetShaderInfoLog(m_fragmentShader, 512, nullptr, info);
-            throw info;
-        }
-    }
-
-    /*
-     * 初始化着色器程序
-     */
-    void initShaderProgram() {
-        // 创建着色器程序
-        m_shaderProgram = glCreateProgram();
-
-        // 附加着色器到着色器程序上
-        glAttachShader(m_shaderProgram, m_vertexShader);
-        glAttachShader(m_shaderProgram, m_fragmentShader);
-
-        // 链接着色器程序
-        glLinkProgram(m_shaderProgram);
-
-        // 检查链接错误
-        int success;
-        char info[512];
-        glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &success);
-        if(!success) {
-            glGetProgramInfoLog(m_shaderProgram, 512, nullptr, info);
-            throw info;
-        }
-
-        // 删除着色器对象
-        glDeleteShader(m_vertexShader);
-        glDeleteShader(m_fragmentShader);
+        m_shader = new GLShader(m_vertexPath.c_str(), m_fragmentPath.c_str());
     }
 
     /*
