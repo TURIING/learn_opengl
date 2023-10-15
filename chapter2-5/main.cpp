@@ -4,17 +4,14 @@
 
 
 #include <iostream>
-#include "GLObject.h"
+#include "Triangle.h"
+#include "Rectangle.h"
 #include <vector>
 
 constexpr int SCR_WIDTH = 800;
 constexpr int SCR_HEIGHT= 600;
 
 int main() {
-    std::vector<float> vertices = {-0.5f, -0.5f, 0.0f,
-                                   0.5f, -0.5f, 0.0f,
-                                   0.0f,  0.5f, 0.0f };
-
     const char *vertexShaderSource = "#version 330 core\n"
                                      "layout (location = 0) in vec3 aPos;\n"
                                      "void main()\n"
@@ -29,14 +26,43 @@ int main() {
                                        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
                                        "}\n\0";
 
-    auto gl = GLObject(SCR_WIDTH, SCR_HEIGHT, "chapter2-5");
+#if 0   // 绘制三角形
+    std::vector<float> vertices = {
+            -0.5f, -0.5f, 0.0f, // left
+            0.5f, -0.5f, 0.0f, // right
+            0.0f,  0.5f, 0.0f  // top
+    };
 
-    gl.setVertices(vertices, 3);
-    gl.setVertexShaderSource(vertexShaderSource);
-    gl.setFragmentShaderSource(fragmentShaderSource);
+    auto triangle = Triangle(SCR_WIDTH, SCR_HEIGHT, "chapter2-5");
 
-    gl.init();
-    gl.loop();
+    triangle.setVertices(vertices, 3);
+    triangle.setVertexShaderSource(vertexShaderSource);
+    triangle.setFragmentShaderSource(fragmentShaderSource);
+
+    triangle.init();
+    triangle.loop();
+#else   // 绘制矩形
+    std::vector<float> vertices = {
+        0.5f,  0.5f, 0.0f,  // top right
+        0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f   // top left
+    };
+    std::vector<unsigned int> indices = {
+        0, 1, 3,  // first Triangle
+        1, 2, 3   // second Triangle
+    };
+
+    auto rectangle = Rectangle(SCR_WIDTH, SCR_HEIGHT, "chapter2-5");
+
+    rectangle.setVertices(vertices, 3);
+    rectangle.setIndices(indices);
+    rectangle.setVertexShaderSource(vertexShaderSource);
+    rectangle.setFragmentShaderSource(fragmentShaderSource);
+
+    rectangle.init();
+    rectangle.loop();
+#endif
 }
 
 

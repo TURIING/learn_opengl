@@ -16,21 +16,14 @@ public:
         initGL();
     }
 
-    ~GLObject() {
-        /* 清理并退出 */
-        glDeleteVertexArrays(1, &m_VAO);
-        glDeleteBuffers(1, &m_VBO);
-        glDeleteProgram(m_shaderProgram);
-
-        glfwTerminate();
-    }
+    virtual ~GLObject(){};
 
     void loop() {
         /* 循环渲染 */
         while (!glfwWindowShouldClose(m_window)) {
             processInput(m_window);
 
-            glClearColor(0.26f, 0.30f, 0.31f, 1.0f);                                                // 设置清空屏幕所用的颜色
+            glClearColor(m_clearColor[0], m_clearColor[1], m_clearColor[2], m_clearColor[3]);       // 设置清空屏幕所用的颜色
             glClear(GL_COLOR_BUFFER_BIT);                                                           // 清空屏幕的颜色缓冲
 
             paint();
@@ -47,25 +40,39 @@ public:
 
         initVAO();
         initVBO();
+        initEBO();
     }
 
     void setVertices(std::vector<float> &_vertices, int _stride) {
         m_vertices = std::move(_vertices);
         m_verticesStride = _stride;
     }
+    void setIndices(std::vector<unsigned int> &_indices) { m_indices = std::move(_indices); }
     void setVertexShaderSource(const char *_shader) { m_vertexShaderSource = _shader; }
     void setFragmentShaderSource(const char *_shader) { m_fragmentShaderSource = _shader; }
+    void setClearColor(float _r, float _g, float _b, float _a) {
+        m_clearColor[0] = _r;
+        m_clearColor[1] = _g;
+        m_clearColor[2] = _b;
+        m_clearColor[3] = _a;
+    }
 private:
     GLFWwindow *m_window = nullptr;
     const char *m_windowTitle = nullptr;
     int m_width;
     int m_height;
 
+    float m_clearColor[4] = { 0.26f, 0.30f, 0.31f, 1.0f };                                        // 清屏颜色
+
+protected:
     unsigned int m_VAO = 0;
 
     std::vector<float> m_vertices;                                                                // 顶点坐标数组
     int m_verticesStride = 0;
     unsigned int m_VBO = 0;
+
+    unsigned int m_EBO = 0;
+    std::vector<unsigned int> m_indices;                                                          // 顶点索引数组
 
     const char *m_vertexShaderSource = nullptr;                                                   // 顶点着色器源码
     unsigned int m_vertexShader = 0;                                                              // 顶点着色器对象
@@ -98,33 +105,6 @@ private:
         }
     }
 
-    void initVAO() {
-        glGenVertexArrays(1, &m_VAO);
-        glBindVertexArray(m_VAO);
-    }
-
-    /*
-     * 初始化VBO
-     */
-    void initVBO() {
-        assert(!m_vertices.empty());
-
-        // 生成VBO对象
-        glGenBuffers(1, &m_VBO);
-
-        // 绑定缓冲类型
-        glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-
-        // 将顶点数据复制到缓冲内存中
-        glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(float), m_vertices.data(), GL_STATIC_DRAW);
-
-        // 解释如何解析顶点数据
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, m_verticesStride * sizeof(float), (void *)0);
-
-        // 启用顶点属性
-        glEnableVertexAttribArray(0);
-    }
-
     /*
      * 初始化顶点着色器
      */
@@ -145,7 +125,7 @@ private:
     }
 
     /*
-     * 初始化顶点着色器
+     * 初始化片段着色器
      */
     void initFragmentShader() {
         assert(m_fragmentShaderSource != nullptr);
@@ -192,16 +172,6 @@ private:
     }
 
     /*
-     * 绘制图形
-     */
-    virtual void paint() {
-        // 使用着色器程序
-        glUseProgram(m_shaderProgram);
-
-        glDrawArrays(GL_TRIANGLES, 0, m_vertices.size() / m_verticesStride);
-    }
-
-    /*
      * 窗口尺寸改变，视口回调函数
      */
     static void framebuffer_size_callback(GLFWwindow *_window, int _width, int _height) {
@@ -217,6 +187,24 @@ private:
             glfwSetWindowShouldClose(_window, true);
         }
     }
+
+protected:
+    virtual void initVAO() = 0;
+
+    /*
+     * 初始化VBO
+     */
+    virtual void initVBO() = 0;
+
+    /*
+     * 初始化EBO
+     */
+    virtual void initEBO() {};
+
+    /*
+     * 绘制图形
+     */
+    virtual void paint() = 0;
 };
 
 #endif //LEARN_OPENGL_GLOBJECT_H

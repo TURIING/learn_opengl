@@ -1,6 +1,6 @@
 include_directories(.)
 
-add_executable(chapter2-5 ${PROJECT_SOURCE_DIR}/src/glad.c main.cpp GLObject.h)
+add_executable(chapter2-5 ${PROJECT_SOURCE_DIR}/src/glad.c main.cpp GLObject.h Triangle.h Rectangle.h)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
