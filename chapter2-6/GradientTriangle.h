@@ -53,8 +53,6 @@ protected:
 
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
-
-
     }
 
     /*

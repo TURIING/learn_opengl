@@ -12,6 +12,9 @@
 #include <string>
 #include <GLShader.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 class GLObject {
 public:
     GLObject(int _scrWidth, int _scrHeight, const char *_title): m_width(_scrWidth), m_height(_scrHeight), m_windowTitle(_title) {
@@ -43,6 +46,7 @@ public:
         initEBO();
 
         initShader();
+        initTexture();
     }
 
     /**
@@ -154,9 +158,38 @@ protected:
     virtual void initEBO() {};
 
     /*
+     * 初始化纹理
+     */
+    virtual void  initTexture() {}
+
+    /*
      * 绘制图形
      */
     virtual void paint() = 0;
+
+    /**
+     * 生成纹理
+     * @param _resPath 图片资源路径
+     * @param _target 纹理目标
+     */
+    static void generateTexture(const std::string &_resPath, GLenum _target, GLenum _format) {
+        assert(!_resPath.empty());
+
+        // 加载纹理图片
+        int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(true);
+        unsigned char *data = stbi_load(_resPath.c_str(), &width, &height, &nrChannels, 0);
+        assert(data != nullptr);
+
+        // 生成纹理
+        glTexImage2D(_target, 0, _format, width, height, 0, _format, GL_UNSIGNED_BYTE, data);
+
+        // 生成多级渐远纹理
+        glGenerateMipmap(_target);
+
+        // 释放图像
+        stbi_image_free(data);
+    }
 };
 
 #endif //LEARN_OPENGL_GLOBJECT_H

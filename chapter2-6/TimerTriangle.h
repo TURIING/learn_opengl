@@ -12,13 +12,13 @@
 #include "GLObject.h"
 #include <cmath>
 
-class TimerTriangle: public GLObject{
+class TextureRectangle: public GLObject{
 public:
-    TimerTriangle(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
+    TextureRectangle(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
 
     }
 
-    ~TimerTriangle() override {
+    ~TextureRectangle() override {
         /* 清理并退出 */
         glDeleteVertexArrays(1, &m_VAO);
         glDeleteBuffers(1, &m_VBO);

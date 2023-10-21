@@ -13,7 +13,7 @@ constexpr int SCR_HEIGHT= 600;
 
 int main() {
 
-#if 1   // 绘制定时换色三角形
+#if 0   // 绘制定时换色三角形
 
     std::vector<float> vertices = {
             -0.5f, -0.5f, 0.0f, // left

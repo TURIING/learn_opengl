@@ -65,6 +65,8 @@ public:
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+
+        this->use();
     }
 
     ~GLShader() {
