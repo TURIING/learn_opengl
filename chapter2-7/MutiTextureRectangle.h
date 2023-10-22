@@ -13,13 +13,13 @@
 #include <string>
 
 
-class MutiTextureRectangle: public GLObject{
+class InclinedPlane: public GLObject{
 public:
-    MutiTextureRectangle(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
+    InclinedPlane(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
 
     }
 
-    ~MutiTextureRectangle() override {
+    ~InclinedPlane() override {
         /* 清理并退出 */
         glDeleteVertexArrays(1, &m_VAO);
         glDeleteBuffers(1, &m_VBO);

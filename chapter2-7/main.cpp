@@ -38,7 +38,7 @@ int main() {
     rectangle.init();
     rectangle.loop();
 
-#else   // 绘制
+#else   // 多纹理贴图叠加
 
     std::vector<float> vertices = {
         //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
@@ -53,7 +53,7 @@ int main() {
         1, 2, 3  // second triangle
     };
 
-    auto rectangle = MutiTextureRectangle(SCR_WIDTH, SCR_HEIGHT, "chapter2-7");
+    auto rectangle = InclinedPlane(SCR_WIDTH, SCR_HEIGHT, "chapter2-7");
 
     rectangle.setVertices(vertices, 8);
     rectangle.setIndices(indices);
