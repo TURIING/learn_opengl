@@ -2,7 +2,7 @@ include_directories(.)
 
 project(chapter2-9)
 
-add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/glad.c main.cpp GLObject.h InclinedPlane.h Cube.h)
+add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/glad.c main.cpp GLObject.h InclinedPlane.h Cube.h MoreCube.h)
 
 include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR})
 link_directories(${CMAKE_SOURCE_DIR}/lib)
