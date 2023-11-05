@@ -2,8 +2,8 @@
 // Created by TURIING on 2023/10/14.
 //
 
-#ifndef LEARN_OPENGL_MoreCube_H
-#define LEARN_OPENGL_MoreCube_H
+#ifndef LEARN_OPENGL_InitialUseCamera_H
+#define LEARN_OPENGL_InitialUseCamera_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -11,18 +11,19 @@
 #include <cassert>
 #include "GLObject.h"
 #include <string>
+#include "GLCamera.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class RotateAround: public GLObject{
+class InitialUseCamera: public GLObject{
 public:
-    RotateAround(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
+    InitialUseCamera(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
         this->enableDeepTest();
     }
 
-    ~RotateAround() override {
+    ~InitialUseCamera() override {
         /* 清理并退出 */
         glDeleteVertexArrays(1, &m_VAO);
         glDeleteBuffers(1, &m_VBO);
@@ -39,6 +40,26 @@ public:
         m_cubePos = _cubePos;
     }
 
+    void init() override {
+        glfwSetWindowUserPointer(m_window, this);
+
+        // 绑定鼠标移动回调事件
+        auto pMouseCallBack = [](GLFWwindow *_window, double _xPosIn, double _yPosIn) {
+            static_cast<InitialUseCamera *>(glfwGetWindowUserPointer(_window))->mouseCallBack(_window, _xPosIn, _yPosIn);
+        };
+        glfwSetCursorPosCallback(m_window, pMouseCallBack);
+
+        // 绑定鼠标滚动回调事件
+        auto pScrollCallBack = [](GLFWwindow *_window, double _xOffset, double _yOffset) {
+            static_cast<InitialUseCamera *>(glfwGetWindowUserPointer(_window))->scrollCallBack(_window, _xOffset, _yOffset);
+        };
+        glfwSetScrollCallback(m_window, pScrollCallBack);
+
+        // 捕获鼠标
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        GLObject::init();
+    }
 protected:
     void initVAO() override {
         glGenVertexArrays(1, &m_VAO);
@@ -116,31 +137,70 @@ protected:
         glBindTexture(GL_TEXTURE_2D, m_texture2);
     }
 
+    void preLoop() override {
+
+    }
+
     /*
      * 绘制图形
      */
     void paint() override {
         assert(!m_cubePos.empty());
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
 
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), (float)getWidth() / (float)getHeight(), 0.1f, 100.0f);
+        auto currentFrame = static_cast<float>(glfwGetTime());
+        m_deltaTime = currentFrame - m_lastFrame;
+        m_lastFrame = currentFrame;
 
-        m_shader->setMat4("view", glm::value_ptr(view));
+        glm::mat4 projection = glm::perspective(glm::radians(m_camera.getFov()), (float)getWidth() / (float)getHeight(), 0.1f, 100.0f);
         m_shader->setMat4("projection", glm::value_ptr(projection));
+
+        glm::mat4 view = m_camera.getViewMatrix();
+        m_shader->setMat4("view", glm::value_ptr(view));
 
         for(auto i = 0; i < m_cubePos.size(); i++) {
             glm::mat4 model = glm::mat4(1.0f);
-
             model = glm::translate(model, m_cubePos[i]);
-            float angle = 20.0f * i;
+            float angle = 20.0f * static_cast<float>(i);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
             m_shader->setMat4("model", glm::value_ptr(model));
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+    }
+
+    void processInput(GLFWwindow *_window) override {
+        if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+            m_camera.processKeyboard(CameraMovement::FORWARD, m_deltaTime);
+        if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+            m_camera.processKeyboard(CameraMovement::BAKCWARD, m_deltaTime);
+        if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+            m_camera.processKeyboard(CameraMovement::LEFT, m_deltaTime);
+        if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+            m_camera.processKeyboard(CameraMovement::RIGHT, m_deltaTime);
+
+        GLObject::processInput(_window);
+    }
+private:
+    void mouseCallBack(GLFWwindow *_window, double _xPosIn, double _yPosIn) override {
+        auto xpos = static_cast<float>(_xPosIn);
+        auto ypos = static_cast<float>(_yPosIn);
+        if(m_bFirstMouse) {
+            m_fLastX = xpos;
+            m_fLastY = ypos;
+            m_bFirstMouse = false;
+        }
+
+        float xOffset = xpos - m_fLastX;
+        float yOffset = m_fLastY - ypos;
+
+        m_fLastX = xpos;
+        m_fLastY = ypos;
+
+        m_camera.processMouseMovement(xOffset, yOffset);
+    }
+
+    void scrollCallBack(GLFWwindow *_window, double _xOffset, double _yOffset) override {
+        m_camera.processMouseScroll(static_cast<float>(_yOffset));
     }
 private:
     std::string m_texturePath1;
@@ -150,8 +210,18 @@ private:
     unsigned int m_texture2 = 0;
     // 正方体的位置
     std::vector<glm::vec3> m_cubePos;
+    // 上一帧跟当前帧的时间间隔
+    float m_deltaTime = 0.0f;
+    // 记录当前帧的时间
+    float m_lastFrame = 0.0f;
+    // 鼠标是否刚被捕获
+    bool m_bFirstMouse = true;
+    float m_fLastX = 800.0f / 2.0;
+    float m_fLastY = 600.0f / 2.0;
+    // 摄像机对象
+    GLCamera m_camera = GLCamera(glm::vec3(0.0f, 0.0f, 4.0f));
 };
 
 
 
-#endif //LEARN_OPENGL_MoreCube_H
+#endif //LEARN_OPENGL_InitialUseCamera_H
