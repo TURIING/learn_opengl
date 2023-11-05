@@ -2,8 +2,8 @@
 // Created by TURIING on 2023/10/14.
 //
 
-#ifndef LEARN_OPENGL_MoreCube_H
-#define LEARN_OPENGL_MoreCube_H
+#ifndef LEARN_OPENGL_RotateAround_H
+#define LEARN_OPENGL_RotateAround_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -121,22 +121,23 @@ protected:
      */
     void paint() override {
         assert(!m_cubePos.empty());
-        glm::mat4 view = glm::mat4(1.0f);
+
         glm::mat4 projection = glm::mat4(1.0f);
-
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         projection = glm::perspective(glm::radians(45.0f), (float)getWidth() / (float)getHeight(), 0.1f, 100.0f);
-
-        m_shader->setMat4("view", glm::value_ptr(view));
         m_shader->setMat4("projection", glm::value_ptr(projection));
+
+        float radius = 10.0f;
+        float camX = static_cast<float>(sin(glfwGetTime()) * radius);
+        float camZ = static_cast<float>(cos(glfwGetTime()) * radius);
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        m_shader->setMat4("view", glm::value_ptr(view));
 
         for(auto i = 0; i < m_cubePos.size(); i++) {
             glm::mat4 model = glm::mat4(1.0f);
-
             model = glm::translate(model, m_cubePos[i]);
-            float angle = 20.0f * i;
+            float angle = 20.0f * static_cast<float>(i);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
             m_shader->setMat4("model", glm::value_ptr(model));
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -154,4 +155,4 @@ private:
 
 
 
-#endif //LEARN_OPENGL_MoreCube_H
+#endif //LEARN_OPENGL_RotateAround_H

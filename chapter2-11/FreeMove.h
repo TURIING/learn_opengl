@@ -2,8 +2,8 @@
 // Created by TURIING on 2023/10/14.
 //
 
-#ifndef LEARN_OPENGL_MoreCube_H
-#define LEARN_OPENGL_MoreCube_H
+#ifndef LEARN_OPENGL_FreeMove_H
+#define LEARN_OPENGL_FreeMove_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -16,13 +16,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class RotateAround: public GLObject{
+class FreeMove: public GLObject{
 public:
-    RotateAround(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
+    FreeMove(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
         this->enableDeepTest();
     }
 
-    ~RotateAround() override {
+    ~FreeMove() override {
         /* 清理并退出 */
         glDeleteVertexArrays(1, &m_VAO);
         glDeleteBuffers(1, &m_VBO);
@@ -116,31 +116,48 @@ protected:
         glBindTexture(GL_TEXTURE_2D, m_texture2);
     }
 
+    void preLoop() override {
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)getWidth() / (float)getHeight(), 0.1f, 100.0f);
+        m_shader->setMat4("projection", glm::value_ptr(projection));
+    }
+
     /*
      * 绘制图形
      */
     void paint() override {
         assert(!m_cubePos.empty());
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
 
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), (float)getWidth() / (float)getHeight(), 0.1f, 100.0f);
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
+        glm::mat4 view = glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
         m_shader->setMat4("view", glm::value_ptr(view));
-        m_shader->setMat4("projection", glm::value_ptr(projection));
 
         for(auto i = 0; i < m_cubePos.size(); i++) {
             glm::mat4 model = glm::mat4(1.0f);
-
             model = glm::translate(model, m_cubePos[i]);
-            float angle = 20.0f * i;
+            float angle = 20.0f * static_cast<float>(i);
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
             m_shader->setMat4("model", glm::value_ptr(model));
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+    }
+
+    void processInput(GLFWwindow *_window) override {
+        float cameraSpeed = 0.05;
+        if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+            m_cameraPos += cameraSpeed * m_cameraFront;
+        if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+            m_cameraPos -= cameraSpeed * m_cameraFront;
+        if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+            m_cameraPos -= glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+        if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+            m_cameraPos += glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * cameraSpeed;
+
+        GLObject::processInput(_window);
     }
 private:
     std::string m_texturePath1;
@@ -150,8 +167,18 @@ private:
     unsigned int m_texture2 = 0;
     // 正方体的位置
     std::vector<glm::vec3> m_cubePos;
+    // 摄像机的位置
+    glm::vec3 m_cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+    // 摄像机指向的向量
+    glm::vec3 m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    // 摄像机的上向量
+    glm::vec3 m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    // 上一帧跟当前帧的时间间隔
+    float deltaTime = 0.0f;
+    // 记录当前帧的时间
+    float lastFrame = 0.0f;
 };
 
 
 
-#endif //LEARN_OPENGL_MoreCube_H
+#endif //LEARN_OPENGL_FreeMove_H
