@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include "glad/glad.h"
+#include <glm/glm.hpp>
 
 class GLShader {
 public:
@@ -79,6 +80,7 @@ public:
         glUniform1i(getLocation(_name), (int)_value);
     }
 
+    // -----------------------------------------------------------------------------------------------
     void setInt(const std::string &_name, int _value) const {
         glUniform1i(getLocation(_name), _value);
     }
@@ -87,14 +89,40 @@ public:
         glUniform1f(getLocation(_name), _value);
     }
 
+    void setFloat(const std::string &_name, float _v1, float _v2, float _v3) const {
+        glUniform3f(getLocation(_name), _v1, _v2, _v3);
+    }
+
+    [[deprecated("Use setVec4 instead.")]]
     void setFloat(const std::string &_name, float _v1, float _v2, float _v3, float _v4) const {
         glUniform4f(getLocation(_name), _v1, _v2, _v3, _v4);
     }
 
-    void setMat4(const std::string &_name, const GLfloat *_value) {
+    // -----------------------------------------------------------------------------------------------
+    void setVec3(const std::string &_name, float _v1, float _v2, float _v3) const {
+        glUniform3f(getLocation(_name), _v1, _v2, _v3);
+    }
+
+    void setVec3(const std::string &_name, const glm::vec3 &_value) const {
+        glUniform3fv(getLocation(_name), 1, &_value[0]);
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    void setVec4(const std::string &_name, float _v1, float _v2, float _v3, float _v4) const {
+        glUniform4f(getLocation(_name), _v1, _v2, _v3, _v4);
+    }
+
+    void setVec4(const std::string &_name, const glm::vec4 &_value) const {
+        glUniform4fv(getLocation(_name), 1, &_value[0]);
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    void setMat4(const std::string &_name, const GLfloat *_value) const {
         glUniformMatrix4fv(getLocation(_name), 1, GL_FALSE, _value);
     }
 
+    // -----------------------------------------------------------------------------------------------
+    [[nodiscard]]
     int getLocation(const std::string &_name) const {
         return glGetUniformLocation(ID, _name.c_str());
     }

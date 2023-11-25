@@ -40,7 +40,7 @@ int main() {
 
 #endif
 
-#if 1
+#if 0
     /* 正方体 */
     std::vector<float> vertices = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -96,7 +96,7 @@ int main() {
     cube.loop();
 #endif
 
-#if 0
+#if 1
     /* 更多的正方体 */
 
     //region 数据定义
@@ -157,7 +157,7 @@ int main() {
     };
     //endregion
 
-    auto cube = MoreCube(SCR_WIDTH, SCR_HEIGHT, "chapter2-10");
+    auto cube = RotateAround(SCR_WIDTH, SCR_HEIGHT, "chapter2-10");
 
     cube.setVertices(vertices, 5);
     cube.setTexturePath("../../Resources/texture/container.jpg", "../../Resources/texture/awesomeface.png");

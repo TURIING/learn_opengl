@@ -16,13 +16,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-class RotateAround: public GLObject{
+class MoreCube: public GLObject{
 public:
-    RotateAround(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
+    MoreCube(int _scrWidth, int _scrHeight, const char *_title): GLObject(_scrWidth, _scrHeight, _title) {
         this->enableDeepTest();
     }
 
-    ~RotateAround() override {
+    ~MoreCube() override {
         /* 清理并退出 */
         glDeleteVertexArrays(1, &m_VAO);
         glDeleteBuffers(1, &m_VBO);
