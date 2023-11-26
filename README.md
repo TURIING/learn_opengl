@@ -19,3 +19,7 @@
 镜面光照
 
 <img src="image/README/image-20231126125106635.png" alt="image-20231126125106635" style="zoom:50%;" />
+
+### 第三节（加入材质的冯氏光照）
+
+<img src="image/README/image-20231126134242060.png" alt="image-20231126134242060" style="zoom:50%;" />
