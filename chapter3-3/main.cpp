@@ -50,7 +50,7 @@ int main() {
             -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     };
 
-    MaterialLight scene("chapter3-2");
+    MaterialLight scene("chapter3-3");
     scene.setVertices(vertices, 6);
     scene.init();
     scene.loop();

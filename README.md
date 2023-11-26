@@ -23,3 +23,7 @@
 ### 第三节（加入材质的冯氏光照）
 
 <img src="image/README/image-20231126134242060.png" alt="image-20231126134242060" style="zoom:50%;" />
+
+### 第四节（采用贴图的冯氏光照）
+
+<img src="image/README/image-20231126154613281.png" alt="image-20231126154613281" style="zoom:50%;" />
