@@ -10,6 +10,7 @@
 #include <sstream>
 #include "glad/glad.h"
 #include <glm/glm.hpp>
+#include <iostream>
 
 class GLShader {
 public:
@@ -36,7 +37,8 @@ public:
             fragmentCode = fShaderStream.str();
         }
         catch (std::ifstream::failure &_e) {
-            throw "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ";
+            std::cout << _e.what() << std::endl;
+            exit(-1);
         }
 
         const char *vertexShaderCode = vertexCode.c_str();
@@ -147,7 +149,8 @@ private:
             if (!success)
             {
                 glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
-                throw "ERROR::SHADER_COMPILATION_ERROR of type";
+                std::cout << infoLog << std::endl;
+                exit(-1);
             }
         }
         else
@@ -156,7 +159,8 @@ private:
             if (!success)
             {
                 glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
-                throw "ERROR::PROGRAM_LINKING_ERROR of type";
+                std::cout << infoLog << std::endl;
+                exit(-1);
             }
         }
     }

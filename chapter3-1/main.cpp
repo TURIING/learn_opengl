@@ -5,6 +5,7 @@
 #include "LightScene.h"
 
 int main() {
+    //region 光源与物体的布置
     std::vector<float> vertices = {
             -0.5f, -0.5f, -0.5f,
             0.5f, -0.5f, -0.5f,
@@ -53,4 +54,5 @@ int main() {
     scene.setVertices(vertices, 3);
     scene.init();
     scene.loop();
+    //endregion
 }
