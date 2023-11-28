@@ -27,3 +27,21 @@
 ### 第四节（采用贴图的冯氏光照）
 
 <img src="image/README/image-20231126154613281.png" alt="image-20231126154613281" style="zoom:50%;" />
+
+### 第五节（投光物）
+
+平行光
+
+<img src="image/README/image-20231126200611661.png" alt="image-20231126200611661" style="zoom:50%;" />
+
+点光源
+
+<img src="image/README/image-20231127211901327.png" alt="image-20231127211901327" style="zoom:50%;" />
+
+聚光
+
+<img src="image/README/image-20231128212414959.png" alt="image-20231128212414959" style="zoom:50%;" />
+
+柔化的聚光
+
+<img src="image/README/image-20231128212337724.png" alt="image-20231128212337724" style="zoom:50%;" />

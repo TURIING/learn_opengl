@@ -52,6 +52,8 @@ public:
 
     glm::vec3 getPosition() { return m_position; }
 
+    glm::vec3 getFront() { return m_front; }
+
     /*
      * 处理键盘事件
      */
